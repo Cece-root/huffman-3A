@@ -4,7 +4,7 @@
 =======
 int main(int argc, char const *argv[]){
     FILE *fic = NULL;
-    char choice = 0;
+    char choice = '0';
     char fname[200]="";
     while(choice != 'c' && choice != 'd'){
         printf("Do you wish the compress (c) or decompress (d) a file ?");
@@ -18,7 +18,7 @@ int main(int argc, char const *argv[]){
         }
     }
     fclose(fic);
-    //aaa
+    //aaaa
     return 0;
 }
 >>>>>>> e9e8beb0d28b1a2ad18bd49f5a67f67d812393d1
