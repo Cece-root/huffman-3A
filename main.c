@@ -8,10 +8,19 @@ int main(int argc, char const *argv[]){
     }
     if (choice == 'c'){
         while(fic == NULL){ //check whether or not the file exists.
-                printf("Enter the path of the file you wish to compress");
+                printf("Enter the path of the file you wish to compress : ");
                 scanf("%200s",fname);
                 fic=fopen(fname,"r");
+                //encryption(fname);
         }
+    }
+    else{
+            while(fic == NULL){ //check whether or not the file exists.
+                printf("Enter the path of the file you wish to decompress : ");
+                scanf("%200s",fname);
+                fic=fopen(fname,"r");
+                //decryption(fname);
+            }
     }
     fclose(fic);
     return 0;
