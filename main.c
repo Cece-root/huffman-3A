@@ -1,1 +1,3 @@
 //bonjour
+void main(){
+}
