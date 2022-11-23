@@ -1,7 +1,3 @@
-//bonjour
-<<<<<<< HEAD
-//aurevoir
-=======
 int main(int argc, char const *argv[]){
     FILE *fic = NULL;
     char choice = '0';
@@ -18,7 +14,6 @@ int main(int argc, char const *argv[]){
         }
     }
     fclose(fic);
-    //aaaa
     return 0;
 }
->>>>>>> e9e8beb0d28b1a2ad18bd49f5a67f67d812393d1
+
