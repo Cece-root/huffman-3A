@@ -37,30 +37,35 @@ tree ConstructTree(char data, tree left, tree right){
 	printf("\n");
 	for(int i = 5; i < space; i++)
 		printf(" ");
-	printf("%d\n", root->data);
-	
+	printf("%d\n", root->data);	
 	print2D(root->left, space);
-}
-	
-void printtree(struct tree* root){
-	print2D(root, 0);
-}
-
-void printtree(tree B){
+}*/
+/*void printtree(tree B){
     if (B!=NULL)
     {
-        if (B->left != NULL || B->right !=NULL)
+        if (B->left != NULL)
         {
-            printf("1 ");
+            printf("0 ");
         }
+        else if(B->right != NULL) {
+		printf("1 ");
+	}
+	printtree(B->right);
         printtree(B->left);
-        printtree(B->right);
         if (B->left == NULL && B->right == NULL)
         {
-            printf("0%c ", B->data);
+            printf("%c\n ", B->data);
         }
     }else{}
 }*/
+
+void printthrough(tree B){
+if (B == NULL)
+return;
+printthrough(B->left);
+printf("%c ", B->data);
+printthrough(B->right);
+}
 
 void print(struct list *head) {
     for (; head; head = head->next)
@@ -105,13 +110,13 @@ int is_in(char letter, struct list *list) {
     return 0; // is not in
 }
 
-void CodingTree(struct list **head){
+tree CodingTree(struct list **head){
     list * current = head ;
     tree treeresult;
     while( (*current)->next) {
         list node_1 = *head;
         if(((*head))->next == NULL){
-        	break;
+        	return treeresult;
         	}
         list node_2 = (*head)->next;
         printf("---------------------\n");
@@ -168,8 +173,7 @@ void occurency(char *fileNAME)
     print(h);
     printf("###########################\n\n");
      
-    CodingTree(&h);
-    
+    printthrough(CodingTree(&h));
     fclose(file);
 } 
 
