@@ -106,14 +106,15 @@ void CodingTree(struct list **head){
     
 
         //printf("Total FREQ : %d", list_tree->freq);
-        
         InsertSort(head);
         printf("\n");
         print(*head);
-
+        if(!((*current)->next)){
+        	printf("on sort");
+        	break;
+    	}
         current = &((*current)->next);
     }
-    
 }
 
 
@@ -161,5 +162,4 @@ int main()
 {
     char *test = "test";
     occurency(test);
-
 }
