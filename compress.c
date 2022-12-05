@@ -28,7 +28,24 @@ tree ConstructTree(char data, tree left, tree right){
     return new;
 }
 
-/*
+/*void print2D(struct tree* root, int space){
+	if(root == NULL);
+		return;
+	space += 5;
+	
+	print2D(root->right, space);
+	printf("\n");
+	for(int i = 5; i < space; i++)
+		printf(" ");
+	printf("%d\n", root->data);
+	
+	print2D(root->left, space);
+}
+	
+void printtree(struct tree* root){
+	print2D(root, 0);
+}
+
 void printtree(tree B){
     if (B!=NULL)
     {
@@ -43,8 +60,8 @@ void printtree(tree B){
             printf("0%c ", B->data);
         }
     }else{}
-}
-*/
+}*/
+
 void print(struct list *head) {
     for (; head; head = head->next)
         printf(" - frequence of %c is %d\n", head->tree->data, head->freq);
@@ -90,15 +107,18 @@ int is_in(char letter, struct list *list) {
 
 void CodingTree(struct list **head){
     list * current = head ;
-
+    tree treeresult;
     while( (*current)->next) {
         list node_1 = *head;
+        if(((*head))->next == NULL){
+        	break;
+        	}
         list node_2 = (*head)->next;
         printf("---------------------\n");
 
         int sum = (node_1->freq) + (node_2->freq);
 
-        tree treeresult = ConstructTree(' ', node_1->tree, node_2->tree);
+        treeresult = ConstructTree(' ', node_1->tree, node_2->tree);
         
         /* Push in the head */ 
         *head = ConstructList(sum, (*head)->next->next, treeresult);
@@ -109,10 +129,6 @@ void CodingTree(struct list **head){
         InsertSort(head);
         printf("\n");
         print(*head);
-        if(!((*current)->next)){
-        	printf("on sort");
-        	break;
-    	}
         current = &((*current)->next);
     }
 }
@@ -155,10 +171,9 @@ void occurency(char *fileNAME)
     CodingTree(&h);
     
     fclose(file);
-
 } 
 
-int main()
+void main()
 {
     char *test = "test";
     occurency(test);
