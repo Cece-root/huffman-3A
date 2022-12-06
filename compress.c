@@ -59,14 +59,6 @@ tree ConstructTree(char data, tree left, tree right){
     }else{}
 }*/
 
-void printthrough(tree B){
-if (B == NULL)
-return;
-printthrough(B->left);
-printf("%c ", B->data);
-printthrough(B->right);
-}
-
 void print(struct list *head) {
     for (; head; head = head->next)
         printf(" - frequence of %c is %d\n", head->tree->data, head->freq);
@@ -109,7 +101,9 @@ int is_in(char letter, struct list *list) {
         if (list->tree->data == letter) return 1;
     return 0; // is not in
 }
-
+int leafcheck(tree B){ //modify
+    return !(B->left) && !(B->right);
+}
 tree CodingTree(struct list **head){
     list * current = head ;
     tree treeresult;
@@ -128,8 +122,6 @@ tree CodingTree(struct list **head){
         /* Push in the head */ 
         *head = ConstructList(sum, (*head)->next->next, treeresult);
 
-    
-
         //printf("Total FREQ : %d", list_tree->freq);
         InsertSort(head);
         printf("\n");
@@ -138,6 +130,26 @@ tree CodingTree(struct list **head){
     }
 }
 
+void printbinary(tree B, int codes[], int somme){//modify
+    if(B->left){
+        codes[somme] = 0;
+        printbinary(B->left, codes, somme+1);
+    }
+
+    if(B->right){
+        codes[somme] = 1;
+        printbinary(B->right, codes, somme+1);
+    }
+
+    if(leafcheck(B)){
+        printf("%c: ", B->data);
+        for (int i = 0; i<somme; i++){
+            printf("%d", codes[i]);
+        }
+        printf("\n");
+    }
+
+}
 
 void occurency(char *fileNAME)
 {
@@ -173,7 +185,9 @@ void occurency(char *fileNAME)
     print(h);
     printf("###########################\n\n");
      
-    printthrough(CodingTree(&h));
+    printf("done");
+    int codes[100];
+    printbinary(CodingTree(&h), codes, 0);
     fclose(file);
 } 
 
