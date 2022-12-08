@@ -131,23 +131,23 @@ tree CodingTree(struct list **head){
     }
 }
 
-void getbinary(tree B, int codes[], int somme, int j){//modify
+void getbinary(tree B, int codes[], int somme, FILE *bincodes){//modify
     if(B->left){
         codes[somme] = 0;
-        getbinary(B->left, codes, somme+1, j);
+        getbinary(B->left, codes, somme+1, bincodes);
     }
 
     if(B->right){
         codes[somme] = 1;
-        getbinary(B->right, codes, somme+1, j);
+        getbinary(B->right, codes, somme+1, bincodes);
     }
 
     if(leafcheck(B)){
-        printf("%c: ", B->data);
+        fprintf(bincodes, "%c: ", B->data);
         for (int i = 0; i<somme; i++){
-            printf("%d", codes[i]);
+            fprintf(bincodes, "%d", codes[i]);
         }
-        printf("\n");
+        fprintf(bincodes, "\n");
     }
 
 }
@@ -156,14 +156,16 @@ void occurency(char *fileNAME)
 {
     FILE *file;
     FILE *cfile;
+    FILE *bincodes;
     file = fopen(fileNAME, "r");
     cfile = fopen("Output/compressed.txt", "w");
-
+    bincodes = fopen("Output/bincodes.txt", "w");
 
     list h = NULL;
     list *a = &h;
     tree T = NULL;
     char c;
+    char d;
 
 
     while ((c = getc(file)) != EOF) {
@@ -191,8 +193,29 @@ void occurency(char *fileNAME)
      
     printf("done");
     int codes[100];
-    getbinary(CodingTree(&h), codes, 0, 0);
+    getbinary(CodingTree(&h), codes, 0, bincodes);
     fclose(file);
+    fclose(bincodes);
+    file = fopen(fileNAME, "r");
+    while ((c = getc(file)) != EOF) {
+        bincodes = fopen("Output/bincodes.txt", "r");
+        while ((d = getc(bincodes)) != EOF) {
+            if(c == d){
+                d= getc(bincodes);
+                d= getc(bincodes);
+                d= getc(bincodes);
+                while (d == '0' || d == '1') {
+                    fprintf(cfile, "%c", d);
+                    d= getc(bincodes);
+                }
+            }
+        
+        }
+        fclose(bincodes);
+        
+    }
+    fclose(file);
+    fclose(cfile);
 } 
 
 void main()
