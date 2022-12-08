@@ -143,7 +143,7 @@ void getbinary(tree B, int codes[], int somme, FILE *bincodes){//modify
     }
 
     if(leafcheck(B)){
-        fprintf(bincodes, "%c: ", B->data);
+        fprintf(bincodes, "%c:", B->data);
         for (int i = 0; i<somme; i++){
             fprintf(bincodes, "%d", codes[i]);
         }
@@ -203,9 +203,8 @@ void occurency(char *fileNAME)
             if(c == d){
                 d= getc(bincodes);
                 d= getc(bincodes);
-                d= getc(bincodes);
                 while (d == '0' || d == '1') {
-                    fprintf(cfile, "%c", d);
+                    fprintf(cfile, "%c", d);//GETBITFILE
                     d= getc(bincodes);
                 }
             }
