@@ -1,7 +1,6 @@
 #include "compress.c"
 
 void main(){
-    FILE *fic = NULL;
     char choice = '0';
     char fname[200]="";
     while(choice != 'c' && choice != 'd'){
@@ -9,18 +8,25 @@ void main(){
         scanf("%c", &choice);
     }
     if (choice == 'c'){
+        printf("Enter the path of the file you wish to compress : ");
+        scanf("%200s",fname);
         while(fopen(fname,"r") == NULL){ //check whether or not the file exists.
-                printf("Enter the path of the file you wish to compress : ");
+                printf("No file has been found for this path ! \nEnter the path of the file you wish to compress : ");
                 scanf("%200s",fname);
-                occurency(fname);
         }
+        occurency(fname);
+                
+
     }
     else{
-            while(fopen(fname,"r") == NULL){ //check whether or not the file exists.
-                printf("Enter the path of the file you wish to decompress : ");
+        printf("Enter the path of the file you wish to decompress : ");
+        scanf("%200s",fname);
+    	while(fopen(fname,"r") == NULL){ //check whether or not the file exists.
+                printf("No file has been found for this path ! \nEnter the path of the file you wish to decompress : ");
                 scanf("%200s",fname);
-                //decryption(fname);
-            }
+        }
+        //decryption(fname);
+          
     }
 }
 

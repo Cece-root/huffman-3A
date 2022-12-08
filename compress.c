@@ -191,7 +191,7 @@ void occurency(char *fileNAME)
     print(h);
     printf("###########################\n\n");
      
-    printf("done");
+
     int codes[100];
     getbinary(CodingTree(&h), codes, 0, bincodes);
     fclose(file);
