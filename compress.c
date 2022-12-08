@@ -157,7 +157,7 @@ void occurency(char *fileNAME)
     FILE *file;
     FILE *cfile;
     file = fopen(fileNAME, "r");
-    cfile = fopen("compressed.txt", "w");
+    cfile = fopen("Output/compressed.txt", "w");
 
 
     list h = NULL;
