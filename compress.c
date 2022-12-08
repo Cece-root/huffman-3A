@@ -217,8 +217,3 @@ void occurency(char *fileNAME)
     fclose(cfile);
 } 
 
-void main()
-{
-    char *test = "test";
-    occurency(test);
-}
