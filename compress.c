@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 //bonjour
 typedef struct list {
     int freq;
@@ -130,15 +131,15 @@ tree CodingTree(struct list **head){
     }
 }
 
-void printbinary(tree B, int codes[], int somme){//modify
+void getbinary(tree B, int codes[], int somme, int j){//modify
     if(B->left){
         codes[somme] = 0;
-        printbinary(B->left, codes, somme+1);
+        getbinary(B->left, codes, somme+1, j);
     }
 
     if(B->right){
         codes[somme] = 1;
-        printbinary(B->right, codes, somme+1);
+        getbinary(B->right, codes, somme+1, j);
     }
 
     if(leafcheck(B)){
@@ -154,7 +155,10 @@ void printbinary(tree B, int codes[], int somme){//modify
 void occurency(char *fileNAME)
 {
     FILE *file;
+    FILE *cfile;
     file = fopen(fileNAME, "r");
+    cfile = fopen("compressed.txt", "r");
+
 
     list h = NULL;
     list *a = &h;
@@ -187,7 +191,7 @@ void occurency(char *fileNAME)
      
     printf("done");
     int codes[100];
-    printbinary(CodingTree(&h), codes, 0);
+    getbinary(CodingTree(&h), codes, 0, 0);
     fclose(file);
 } 
 
