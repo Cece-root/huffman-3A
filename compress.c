@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//bonjour
+
 typedef struct list {
     int freq;
     struct list *next;
@@ -29,41 +29,19 @@ tree ConstructTree(char data, tree left, tree right){
     return new;
 }
 
-/*void print2D(struct tree* root, int space){
-	if(root == NULL);
-		return;
-	space += 5;
-	
-	print2D(root->right, space);
-	printf("\n");
-	for(int i = 5; i < space; i++)
-		printf(" ");
-	printf("%d\n", root->data);	
-	print2D(root->left, space);
-}*/
-/*void printtree(tree B){
-    if (B!=NULL)
-    {
-        if (B->left != NULL)
-        {
-            printf("0 ");
-        }
-        else if(B->right != NULL) {
-		printf("1 ");
-	}
-	printtree(B->right);
-        printtree(B->left);
-        if (B->left == NULL && B->right == NULL)
-        {
-            printf("%c\n ", B->data);
-        }
-    }else{}
-}*/
+// void tree_print(tree root, int level){
+//     for (int i = 0; i < level; i++)
+//         printf(i == level - 1 ? "|-" : "  ");
+//     if(root->data) printf("%c\n", root->data);
+//     else printf("\n");
+//     if(root->left) tree_print(root->left, level + 1);
+//     if(root->right) tree_print(root->right, level + 1);
+// }
 
-void print(struct list *head) {
-    for (; head; head = head->next)
-        printf(" - frequence of %c is %d\n", head->tree->data, head->freq);
-}
+// void print(struct list *head) {
+//     for (; head; head = head->next)
+//         printf(" - frequence of %c is %d\n", head->tree->data, head->freq);
+// }
 
 void SortedInsert(struct list** headRef, struct list* newNode) {
     list current = *headRef;
@@ -97,14 +75,17 @@ void add_freq(struct list *head, char letter, int newfreq) {
         if (head->tree->data == letter ) head->freq += newfreq;
 }
 
+//Returns 1 if it's already in the list, otherwise returns 0.
 int is_in(char letter, struct list *list) {
     for (; list; list = list->next)
-        if (list->tree->data == letter) return 1;
-    return 0; // is not in
+        if (list->tree->data == letter && list->tree->data != 0) return 1;
+    return 0;
 }
-int leafcheck(tree B){ //modify
+
+int leafcheck(tree B){
     return !(B->left) && !(B->right);
 }
+
 tree CodingTree(struct list **head){
     list * current = head ;
     tree treeresult;
@@ -114,51 +95,66 @@ tree CodingTree(struct list **head){
         	return treeresult;
         	}
         list node_2 = (*head)->next;
-        printf("---------------------\n");
+        //printf("---------------------\n");
 
         int sum = (node_1->freq) + (node_2->freq);
 
-        treeresult = ConstructTree(' ', node_1->tree, node_2->tree);
+        treeresult = ConstructTree(0, node_1->tree, node_2->tree);
         
         /* Push in the head */ 
         *head = ConstructList(sum, (*head)->next->next, treeresult);
 
         //printf("Total FREQ : %d", list_tree->freq);
         InsertSort(head);
-        printf("\n");
-        print(*head);
+        //printf("\n");
+        //print(*head);
         current = &((*current)->next);
     }
 }
 
-void getbinary(tree B, int codes[], int somme, FILE *header){//modify
+void writebinary(tree B, FILE *header){
+    if(leafcheck(B)){
+        fprintf(header, "1%c", B->data);
+    }
+    else
+        fprintf(header, "0");
+
     if(B->left){
-        codes[somme] = 0;
-        getbinary(B->left, codes, somme+1, header);
+        writebinary(B->left, header);
     }
 
     if(B->right){
-        codes[somme] = 1;
-        getbinary(B->right, codes, somme+1, header);
+        writebinary(B->right, header);
     }
+}
 
-    if(leafcheck(B)){
-        fprintf(header, "%c:", B->data);
-        for (int i = 0; i<somme; i++){
-            fprintf(header, "%d", codes[i]);
+//CETTE FONCTION VA NOUS PERMETTRE DE STOCKER DANS UN TABLEAU LES CARACTERES ET LEUR CODES ASSOCIES ACCORDING TO THE TREE
+void getcodes(tree mytree, int codes[256][256], int buffer[256], int bincode){
+    int inside = 0;
+    if(mytree->left){
+        buffer[bincode]=0;
+        getcodes(mytree->left, codes, buffer, bincode+1);
+        inside = 1;
+    }
+    if(mytree->right){
+        buffer[bincode]=1;
+        getcodes(mytree->right, codes, buffer, bincode+1);
+        inside = 1;
+    }
+    if(inside == 0){
+        for(int i = 0; i<bincode; i++){
+            codes[mytree->data][i]=buffer[i];
         }
-        fprintf(header, "\n");
+        codes[mytree->data][bincode]=2;
     }
 }
 
 void occurency(char *fileNAME)
 {
     FILE *file;
-    FILE *cfile;
-    FILE *header;
+    FILE *compressedfile;
     file = fopen(fileNAME, "r");
-    cfile = fopen("Output/compressed.txt", "w");
-    header = fopen("Output/header.txt", "w");
+    compressedfile = fopen("Output/compressedfile.txt", "w");
 
     list h = NULL;
     list *a = &h;
@@ -170,16 +166,15 @@ void occurency(char *fileNAME)
 
 
     while ((c = getc(file)) != EOF) {
-        //ADD TOT ICI
         nbTotChar++;
         if (is_in(c, h) == 1)
         { // If in the dictionnary
-            printf("%c is in the dico\n", c);
+            //printf("%c is in the dico\n", c);
             add_freq(h, c, 1);
         }
         if (is_in(c, h) == 0)
         { // If not in the dictionnary
-            printf("%c is Not in the dico\n", c);
+            //printf("%c is Not in the dico\n", c);
             nbUnqChar++;
             T = ConstructTree(c, NULL, NULL);
             *a = ConstructList(1, NULL, T);
@@ -187,39 +182,44 @@ void occurency(char *fileNAME)
         }
         
     }
-    fprintf(header, "%d\n", nbTotChar);
-    fprintf(header, "%d\n", nbUnqChar);
-    
+    fprintf(compressedfile, "%d ", nbTotChar);
+    fprintf(compressedfile, "%d ", nbUnqChar);
+    list *a2 = a;
     
     InsertSort(&h);
-    printf("\n####TABLE OF OCCURENCES####\n");
-    print(h);
-    printf("###########################\n\n");
-     
-
-    int codes[100];
-    getbinary(CodingTree(&h), codes, 0, header);
-    fclose(file);
-    fclose(header);
-    file = fopen(fileNAME, "r");
+    //printf("\n####TABLE OF OCCURENCES####\n");
+    //print(h);
+    //printf("###########################\n\n");
+    tree mytree =  CodingTree(&h);
+    tree mytree2 = mytree;
+    //tree_print(mytree, 0);
+    writebinary(mytree, compressedfile);
+    fseek(file, 0, SEEK_SET); 
+    int codes[256][256] = {2};
+    int buffer[256];
+    getcodes(mytree2, codes, buffer, 0);
+    // for(int i = 0; i<256; i++){
+    //     if (is_in(i, *a2) == 1){
+    //         printf("%c: ",i);
+    //         for(int j = 0; j<256; j++){
+    //             if(codes[i][j]==2)
+    //                 break;
+    //             printf("%d",codes[i][j]);
+    //         }
+    //         printf("\n");
+    //     }
+    // }
     while ((c = getc(file)) != EOF) {
-        nbTotChar++;
-        header = fopen("Output/header.txt", "r");
-        while ((d = getc(header)) != EOF) {
-            if(c == d){
-                d= getc(header);
-                d= getc(header);
-                while (d == '0' || d == '1') {
-                    fprintf(cfile, "%c", d);//GETBITFILE
-                    d= getc(header);
-                }
-            }
-        
+        for(int i = 0; i<256; i++){
+            if(codes[c][i]==2)
+                break;
+            fprintf(compressedfile, "%d", codes[c][i]);
         }
-        fclose(header);
+
         
     }
+    fclose(compressedfile);
     fclose(file);
-    fclose(cfile);
+    
 } 
 

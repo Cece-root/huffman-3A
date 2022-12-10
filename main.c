@@ -4,8 +4,8 @@ void main(){
     char choice = '0';
     char fname[200]="";
     while(choice != 'c' && choice != 'd'){
-        printf("Do you wish the compress (c) or decompress (d) a file ?");
-        scanf("%c", &choice);
+        printf("Do you wish the compress (c) or decompress (d) a file ? ");
+        scanf("%c%*c", &choice);
     }
     if (choice == 'c'){
         printf("Enter the path of the file you wish to compress : ");
