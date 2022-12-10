@@ -131,45 +131,47 @@ tree CodingTree(struct list **head){
     }
 }
 
-void getbinary(tree B, int codes[], int somme, FILE *bincodes){//modify
+void getbinary(tree B, int codes[], int somme, FILE *header){//modify
     if(B->left){
         codes[somme] = 0;
-        getbinary(B->left, codes, somme+1, bincodes);
+        getbinary(B->left, codes, somme+1, header);
     }
 
     if(B->right){
         codes[somme] = 1;
-        getbinary(B->right, codes, somme+1, bincodes);
+        getbinary(B->right, codes, somme+1, header);
     }
 
     if(leafcheck(B)){
-        fprintf(bincodes, "%c:", B->data);
+        fprintf(header, "%c:", B->data);
         for (int i = 0; i<somme; i++){
-            fprintf(bincodes, "%d", codes[i]);
+            fprintf(header, "%d", codes[i]);
         }
-        fprintf(bincodes, "\n");
+        fprintf(header, "\n");
     }
-
 }
 
 void occurency(char *fileNAME)
 {
     FILE *file;
     FILE *cfile;
-    FILE *bincodes;
+    FILE *header;
     file = fopen(fileNAME, "r");
     cfile = fopen("Output/compressed.txt", "w");
-    bincodes = fopen("Output/bincodes.txt", "w");
+    header = fopen("Output/header.txt", "w");
 
     list h = NULL;
     list *a = &h;
     tree T = NULL;
     char c;
     char d;
+    int nbUnqChar=0;
+    int nbTotChar=0;
 
 
     while ((c = getc(file)) != EOF) {
-
+        //ADD TOT ICI
+        nbTotChar++;
         if (is_in(c, h) == 1)
         { // If in the dictionnary
             printf("%c is in the dico\n", c);
@@ -178,12 +180,15 @@ void occurency(char *fileNAME)
         if (is_in(c, h) == 0)
         { // If not in the dictionnary
             printf("%c is Not in the dico\n", c);
+            nbUnqChar++;
             T = ConstructTree(c, NULL, NULL);
             *a = ConstructList(1, NULL, T);
             a = &((*a)->next);
         }
         
     }
+    fprintf(header, "%d\n", nbTotChar);
+    fprintf(header, "%d\n", nbUnqChar);
     
     
     InsertSort(&h);
@@ -193,24 +198,25 @@ void occurency(char *fileNAME)
      
 
     int codes[100];
-    getbinary(CodingTree(&h), codes, 0, bincodes);
+    getbinary(CodingTree(&h), codes, 0, header);
     fclose(file);
-    fclose(bincodes);
+    fclose(header);
     file = fopen(fileNAME, "r");
     while ((c = getc(file)) != EOF) {
-        bincodes = fopen("Output/bincodes.txt", "r");
-        while ((d = getc(bincodes)) != EOF) {
+        nbTotChar++;
+        header = fopen("Output/header.txt", "r");
+        while ((d = getc(header)) != EOF) {
             if(c == d){
-                d= getc(bincodes);
-                d= getc(bincodes);
+                d= getc(header);
+                d= getc(header);
                 while (d == '0' || d == '1') {
                     fprintf(cfile, "%c", d);//GETBITFILE
-                    d= getc(bincodes);
+                    d= getc(header);
                 }
             }
         
         }
-        fclose(bincodes);
+        fclose(header);
         
     }
     fclose(file);
