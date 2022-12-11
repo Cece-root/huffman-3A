@@ -1,5 +1,7 @@
 #include "compress.c"
+#include "decompress.c"
 
+//Main
 void main(){
     char choice = '0';
     char fname[200]="";
@@ -14,7 +16,7 @@ void main(){
                 printf("No file has been found for this path ! \nEnter the path of the file you wish to compress : ");
                 scanf("%200s",fname);
         }
-        occurency(fname);
+        comp(fname);
                 
 
     }
@@ -25,7 +27,7 @@ void main(){
                 printf("No file has been found for this path ! \nEnter the path of the file you wish to decompress : ");
                 scanf("%200s",fname);
         }
-        //decryption(fname);
+        //decomp(fname);
           
     }
 }

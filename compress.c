@@ -2,17 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+//We define our list structure.
 typedef struct list {
     int freq;
     struct list *next;
     struct tree * tree;
 }* list;
 
+//We define our tree structure.
 typedef struct tree{
     char data;
     struct tree *left, *right;
 } * tree;
 
+//Creates the list according to the tree and the frequence of the characters.
 list ConstructList(int frequence, list next, tree tree){
     list new = (list)malloc(sizeof(struct list));
     new->freq = frequence;
@@ -21,6 +24,7 @@ list ConstructList(int frequence, list next, tree tree){
     return new;
 }
 
+//Creates the tree
 tree ConstructTree(char data, tree left, tree right){
     tree new = (tree)malloc(sizeof(struct tree));
     new->data = data;
@@ -29,20 +33,12 @@ tree ConstructTree(char data, tree left, tree right){
     return new;
 }
 
-// void tree_print(tree root, int level){
-//     for (int i = 0; i < level; i++)
-//         printf(i == level - 1 ? "|-" : "  ");
-//     if(root->data) printf("%c\n", root->data);
-//     else printf("\n");
-//     if(root->left) tree_print(root->left, level + 1);
-//     if(root->right) tree_print(root->right, level + 1);
-// }
-
 // void print(struct list *head) {
 //     for (; head; head = head->next)
 //         printf(" - frequence of %c is %d\n", head->tree->data, head->freq);
 // }
 
+//Allows us to sort our tree
 void SortedInsert(struct list** headRef, struct list* newNode) {
     list current = *headRef;
     // Special case for the head end
@@ -60,6 +56,7 @@ void SortedInsert(struct list** headRef, struct list* newNode) {
     }
 }
 
+//Using SortedInsert to sort what we get in input
 void InsertSort(struct list** headRef) {
     list result = NULL, current = *headRef, next;
     while (current!=NULL) {
@@ -70,6 +67,7 @@ void InsertSort(struct list** headRef) {
     *headRef = result;
 }
 
+//Allows us to get the frequency of a letter in order to get the tree later on.
 void add_freq(struct list *head, char letter, int newfreq) {
     for(; head; head = head->next)
         if (head->tree->data == letter ) head->freq += newfreq;
@@ -82,10 +80,12 @@ int is_in(char letter, struct list *list) {
     return 0;
 }
 
+//Returns us if we are in a leaf or not
 int leafcheck(tree B){
     return !(B->left) && !(B->right);
 }
 
+//Returns the tree once it is fully created
 tree CodingTree(struct list **head){
     list * current = head ;
     tree treeresult;
@@ -112,6 +112,7 @@ tree CodingTree(struct list **head){
     }
 }
 
+//Write the binary code in the header of our compressed file using the tree.
 void writebinary(tree B, FILE *header){
     if(leafcheck(B)){
         fprintf(header, "1%c", B->data);
@@ -128,7 +129,7 @@ void writebinary(tree B, FILE *header){
     }
 }
 
-//CETTE FONCTION VA NOUS PERMETTRE DE STOCKER DANS UN TABLEAU LES CARACTERES ET LEUR CODES ASSOCIES ACCORDING TO THE TREE
+//This function will allow us to stock in a 2D table characters and their associated codes.
 void getcodes(tree mytree, int codes[256][256], int buffer[256], int bincode){
     int inside = 0;
     if(mytree->left){
@@ -149,7 +150,8 @@ void getcodes(tree mytree, int codes[256][256], int buffer[256], int bincode){
     }
 }
 
-void occurency(char *fileNAME)
+//Function that allows us to run all the functions needed to compress our given file.
+void comp(char *fileNAME)
 {
     FILE *file;
     FILE *compressedfile;
@@ -184,7 +186,7 @@ void occurency(char *fileNAME)
     }
     fprintf(compressedfile, "%d ", nbTotChar);
     fprintf(compressedfile, "%d ", nbUnqChar);
-    list *a2 = a;
+    //list *a2 = a;
     
     InsertSort(&h);
     //printf("\n####TABLE OF OCCURENCES####\n");
