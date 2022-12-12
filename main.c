@@ -1,4 +1,3 @@
-#include "compress.c"
 #include "decompress.c"
 
 //Main
@@ -27,7 +26,7 @@ void main(){
                 printf("No file has been found for this path ! \nEnter the path of the file you wish to decompress : ");
                 scanf("%200s",fname);
         }
-        //decomp(fname);
+        decomp(fname);
           
     }
 }

@@ -6,14 +6,14 @@
 typedef struct list {
     int freq;
     struct list *next;
-    struct tree * tree;
-}* list;
+    struct tree *tree;
+} *list;
 
 //We define our tree structure.
 typedef struct tree{
     char data;
     struct tree *left, *right;
-} * tree;
+} *tree;
 
 //Creates the list according to the tree and the frequence of the characters.
 list ConstructList(int frequence, list next, tree tree){
@@ -39,7 +39,7 @@ tree ConstructTree(char data, tree left, tree right){
 // }
 
 //Allows us to sort our tree
-void SortedInsert(struct list** headRef, struct list* newNode) {
+void SortedInsert(struct list **headRef, struct list *newNode) {
     list current = *headRef;
     // Special case for the head end
     if (*headRef == NULL || (*headRef)->freq >= newNode->freq) {
@@ -57,7 +57,7 @@ void SortedInsert(struct list** headRef, struct list* newNode) {
 }
 
 //Using SortedInsert to sort what we get in input
-void InsertSort(struct list** headRef) {
+void InsertSort(struct list **headRef) {
     list result = NULL, current = *headRef, next;
     while (current!=NULL) {
         next = current->next;
@@ -82,12 +82,12 @@ int is_in(char letter, struct list *list) {
 
 //Returns us if we are in a leaf or not
 int leafcheck(tree B){
-    return !(B->left) && !(B->right);
+    return (B->left) == NULL && (B->right) == NULL;
 }
 
 //Returns the tree once it is fully created
 tree CodingTree(struct list **head){
-    list * current = head ;
+    list *current = head ;
     tree treeresult;
     while( (*current)->next) {
         list node_1 = *head;
@@ -150,22 +150,37 @@ void getcodes(tree mytree, int codes[256][256], int buffer[256], int bincode){
     }
 }
 
-//Function that allows us to run all the functions needed to compress our given file.
-void comp(char *fileNAME)
+// Function that allows us to run all the functions needed to compress our given file.
+void comp(char *fileName)
 {
-    FILE *file;
-    FILE *compressedfile;
-    file = fopen(fileNAME, "r");
-    compressedfile = fopen("Output/compressedfile.txt", "w");
 
-    list h = NULL;
-    list *a = &h;
-    tree T = NULL;
+    char *fileNameCompress;
     char c;
     char d;
     int nbUnqChar=0;
     int nbTotChar=0;
 
+    list h = NULL;
+    list *a = &h;
+    tree T = NULL;
+    FILE *file;
+    FILE *compressedfile;
+
+    file = fopen(fileName, "r");
+
+    // We write a for loop that will delete the . and what comes after.
+    for(int i = 0; i < strlen(fileName); i++){
+        if(fileName[i] == '.'){
+            fileName[i] = '\0';
+        }
+    }
+
+    // We are going to create the name of the compressed file according to the original name of the file, while making sure that we have no memory leak.
+    fileNameCompress = (char*)malloc( (strlen(fileName) + strlen(".cmp"))*sizeof(char) );
+    strcpy(fileNameCompress, fileName);
+    strcat(fileNameCompress, ".cmp");
+
+    compressedfile = fopen(fileNameCompress, "w");
 
     while ((c = getc(file)) != EOF) {
         nbTotChar++;
