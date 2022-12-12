@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bitfile.h"
 
 //We define our list structure.
 typedef struct list {
@@ -113,19 +114,20 @@ tree CodingTree(struct list **head){
 }
 
 //Write the binary code in the header of our compressed file using the tree.
-void writebinary(tree B, FILE *header){
+void writebinary(tree B, bit_file_t *header){
     if(leafcheck(B)){
-        fprintf(header, "1%c", B->data);
+        BitFilePutBit(1, header);
+        BitFilePutChar(B->data, header);
     }
-    else
-        fprintf(header, "0");
+    else{
+        BitFilePutBit(0, header);
+        if(B->left){
+            writebinary(B->left, header);
+        }
 
-    if(B->left){
-        writebinary(B->left, header);
-    }
-
-    if(B->right){
-        writebinary(B->right, header);
+        if(B->right){
+            writebinary(B->right, header);
+        }
     }
 }
 
@@ -164,7 +166,7 @@ void comp(char *fileName)
     list *a = &h;
     tree T = NULL;
     FILE *file;
-    FILE *compressedfile;
+    bit_file_t *compressedfile;
 
     file = fopen(fileName, "r");
 
@@ -180,7 +182,7 @@ void comp(char *fileName)
     strcpy(fileNameCompress, fileName);
     strcat(fileNameCompress, ".cmp");
 
-    compressedfile = fopen(fileNameCompress, "w");
+    compressedfile = BitFileOpen(fileNameCompress, BF_WRITE);
 
     while ((c = getc(file)) != EOF) {
         nbTotChar++;
@@ -199,8 +201,9 @@ void comp(char *fileName)
         }
         
     }
-    fprintf(compressedfile, "%d ", nbTotChar);
-    fprintf(compressedfile, "%d ", nbUnqChar);
+    BitFilePutBitsNum(compressedfile, &nbTotChar, 4*8, sizeof(nbTotChar));
+    BitFilePutBitsNum(compressedfile, &nbUnqChar, 4*8, sizeof(nbUnqChar));
+
     //list *a2 = a;
     
     InsertSort(&h);
@@ -230,13 +233,16 @@ void comp(char *fileName)
         for(int i = 0; i<256; i++){
             if(codes[c][i]==2)
                 break;
-            fprintf(compressedfile, "%d", codes[c][i]);
+            BitFilePutBit(codes[c][i], compressedfile);     
         }
 
         
     }
-    fclose(compressedfile);
+    BitFileByteAlign(compressedfile);
+    FILE *bfile = BitFileToFILE(compressedfile);
+    fclose(bfile);
     fclose(file);
+    printf("Your file has been compressed under the filename : %s\n", fileNameCompress);
     
 } 
 

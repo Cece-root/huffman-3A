@@ -1,46 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bitfile.h"
 #include "compress.c"
 
+int counter = 0;
 // Rebuild our tree according to the given file and the number of unique characters.
-void rebuildtree(tree head, FILE *file, int *count, int unique_length){
-    char c = getc(file);
-    if(c != EOF && *count < unique_length){
-        if(c == '0'){
+void rebuildtree(tree head, bit_file_t *file, int unique_length){
+    int c = BitFileGetBit(file);
+    if(c != EOF && counter != unique_length){
+        if(c == 0){
             tree newtree = (tree)malloc(sizeof(struct tree));
             head->left = newtree;
+            rebuildtree(head->left, file, unique_length); 
             tree newertree = (tree)malloc(sizeof(struct tree));
             head->right = newertree;    
-            rebuildtree(head->left, file, count, unique_length); 
-            rebuildtree(head->right, file, count, unique_length);        
+            rebuildtree(head->right, file, unique_length);        
         }
-        else if(c == '1'){
-            head->data=getc(file);
-            *count++; 
+        else if(c == 1){
+            head->left = NULL;
+            head->right = NULL;
+            head->data=BitFileGetChar(file);
+            counter++;
         }
     }
 }
 
-// Returns us if we are in a leaf or not
-int checkleaf(tree B){
-    return (B->left) == NULL && (B->right) == NULL;
-}
-
 // Decompresses the given file thanks to the tree created with the header in a new file.
-void decompression(tree mytree, FILE *file, FILE *decompressedfile, int total_length){
-    char c;
+void decompression(tree mytree, bit_file_t *file, FILE *decompressedfile, int total_length){
+    int c;
     int count = 0;
     tree temp_tree = mytree;
-    while((c = getc(file)) != EOF && count < total_length){
-        if(c=='0'){
+    while((c = BitFileGetBit(file)) != EOF && count < total_length){
+        if(c==0){
             temp_tree=temp_tree->left;
         }
-        else if(c=='1'){
+        else if(c==1){
             temp_tree=temp_tree->right;
         }
 
-        if(checkleaf(temp_tree)==1){
+        if(leafcheck(temp_tree)==1){
             fprintf(decompressedfile, "%c", temp_tree->data);
             count++;
             temp_tree = mytree;
@@ -48,19 +47,19 @@ void decompression(tree mytree, FILE *file, FILE *decompressedfile, int total_le
     }
 }
 
+
 // Function that runs all the needed functions to decompress a given file.
 void decomp(char *fileName){
 
     int length = 0;
     int uniqchar = 0;
-    int count = 0;
     char *fileNameDecompress;
-    FILE *file;
+    bit_file_t *file;
     FILE *decompressedfile;
     tree mytree = (tree)malloc(sizeof(struct tree));
 
-    file = fopen(fileName, "r");  
-     
+    file = BitFileOpen(fileName, BF_READ);  
+
     // We write a for loop that will delete the . and what comes after.
     for(int i = 0; i < strlen(fileName); i++){
         if(fileName[i] == '.'){
@@ -72,16 +71,16 @@ void decomp(char *fileName){
     fileNameDecompress = (char*)malloc( (strlen(fileName) + strlen(".dcp"))*sizeof(char) );
     strcpy(fileNameDecompress, fileName);
     strcat(fileNameDecompress, ".dcp");
+
     decompressedfile = fopen(fileNameDecompress, "w");
 
+    BitFileGetBitsNum(file, &length, 4*8, sizeof(length));
+    BitFileGetBitsNum(file, &uniqchar, 4*8, sizeof(uniqchar));
 
-    fscanf(file, "%d", &length);
-    fscanf(file, "%d", &uniqchar);
-    fscanf(file, " ");// to skip the space between the nb of unique chars and the compressed tree.
-
-    rebuildtree(mytree, file, &count, uniqchar);
+    rebuildtree(mytree, file, uniqchar);
     decompression(mytree, file, decompressedfile, length);
 
-    fclose(file);
+    BitFileClose(file);
     fclose(decompressedfile);
+    printf("Your file has been decompressed under the filename : %s\n", fileNameDecompress);
 }
