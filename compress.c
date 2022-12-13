@@ -153,7 +153,7 @@ void getcodes(tree mytree, int codes[256][256], int buffer[256], int bincode){
 }
 
 // Function that allows us to run all the functions needed to compress our given file.
-void comp(char *fileName)
+char *comp(char *fileName)
 {
 
     char *fileNameCompress;
@@ -243,6 +243,6 @@ void comp(char *fileName)
     fclose(bfile);
     fclose(file);
     printf("Your file has been compressed under the filename : %s\n", fileNameCompress);
-    
+    return fileNameCompress;
 } 
 
