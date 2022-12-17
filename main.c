@@ -43,4 +43,3 @@ void main(){
         decomp(comp(fname));
     }
 }
-

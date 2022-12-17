@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bitfile.h"
+#include <sys/stat.h>
 
 //We define our list structure.
 typedef struct list {
@@ -240,9 +241,21 @@ char *comp(char *fileName)
     }
     BitFileByteAlign(compressedfile);
     FILE *bfile = BitFileToFILE(compressedfile);
+
+    //go to the end of the file
+    fseek(file, 0L, SEEK_END);
+    fseek(bfile, 0L, SEEK_END);
+    //get size
+    int size1 = ftell(file);
+    int size2 = ftell(bfile);
+    //print size
+    if (size1 != -1)
+        printf("Size of the original file is %d bytes \n", size1);
+    if (size2 != -1)
+        printf("Size of the compressed file is %d bytes \n", size2);
+
     fclose(bfile);
     fclose(file);
     printf("Your file has been compressed under the filename : %s\n", fileNameCompress);
     return fileNameCompress;
 } 
-

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "bitfile.h"
 #include "compress.c"
+#include <sys/stat.h>
 
 int counter = 0;
 // Rebuild our tree according to the given file and the number of unique characters.
@@ -82,5 +83,26 @@ void decomp(char *fileName){
 
     BitFileClose(file);
     fclose(decompressedfile);
+    
+    struct stat st1;
+    //change to have the complete name with extension
+    char fName[200]="";
+    strcpy(fName, fileName);
+    char ptTxt[200]=".cmp";
+    strcat(fName,ptTxt);
+    //get size
+    stat(fName, &st1);
+    int size1 = st1.st_size;
+    struct stat st2;
+    //get size
+    stat(fileNameDecompress, &st2);
+    int size2 = st2.st_size;
+    //print size
+    if (size1 != -1)
+        printf("Size of the original file is %d bytes \n", size1);
+    if (size2 != -1)
+        printf("Size of the compressed file is %d bytes \n", size2);
+
+    
     printf("Your file has been decompressed under the filename : %s\n", fileNameDecompress);
 }
